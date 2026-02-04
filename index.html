@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>María Paz Gaviria | Caminantes</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              campaignRed: "#E10600",
+              campaignYellow: "#FFD400",
+              campaignLilac: "#C77DFF",
+              ink: "#111111",
+            },
+            fontFamily: {
+              display: ["Clash Grotesk", "ui-sans-serif", "system-ui"],
+              body: ["DM Sans", "ui-sans-serif", "system-ui"],
+            },
+            boxShadow: {
+              card: "0 10px 30px rgba(0,0,0,0.12)",
+              hard: "0 18px 0 rgba(0,0,0,0.35)",
+              neon: "0 0 0 2px rgba(255,212,0,.65), 0 0 28px rgba(255,212,0,.45)",
+            },
+            keyframes: {
+              floaty: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              shake: {
+                "0%, 100%": { transform: "translateX(0)" },
+                "20%": { transform: "translateX(-1px)" },
+                "40%": { transform: "translateX(2px)" },
+                "60%": { transform: "translateX(-2px)" },
+                "80%": { transform: "translateX(1px)" },
+              },
+              flicker: {
+                "0%, 100%": { opacity: "1" },
+                "50%": { opacity: ".86" },
+              },
+              pop: {
+                "0%": { transform: "translateY(10px) scale(.96)", opacity: "0" },
+                "100%": { transform: "translateY(0) scale(1)", opacity: "1" },
+              },
+              marquee: {
+                "0%": { transform: "translateX(0)" },
+                "100%": { transform: "translateX(-50%)" },
+              },
+            },
+            animation: {
+              floaty: "floaty 6s ease-in-out infinite",
+              shake: "shake .3s ease-in-out",
+              flicker: "flicker 2.2s ease-in-out infinite",
+              pop: "pop .55s ease forwards",
+              marquee: "marquee 12s linear infinite",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .reveal, .parallax, .magnetic, .tilt, .sticky-hero, .scanlines, .glitch,
+        .marquee, .spark, .confetti {
+          transform: none !important;
+          transition: none !important;
+          animation: none !important;
+          filter: none !important;
+        }
+      }
+
+      /* Reveal on scroll */
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 650ms cubic-bezier(.2,.8,.2,1), transform 650ms cubic-bezier(.2,.8,.2,1);
+        will-change: transform, opacity;
+      }
+      .reveal.is-in { opacity: 1; transform: translateY(0); }
+
+      /* Parallax driven by JS */
+      .parallax { will-change: transform; transform: translate3d(0,0,0); }
+
+      /* Poster grain + ink */
+      .grain:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+        opacity: .25;
+      }
+
+      /* Scanlines overlay (agresivo pero sutil) */
+      .scanlines:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.09),
+          rgba(0,0,0,0.09) 1px,
+          rgba(0,0,0,0) 3px,
+          rgba(0,0,0,0) 6px
+        );
+        mix-blend-mode: multiply;
+        opacity: .35;
+      }
+
+      /* Glitch title (texto duplicado con blur/offset) */
+      .glitch {
+        position: relative;
+        display: inline-block;
+      }
+      .glitch:before,
+      .glitch:after {
+        content: attr(data-text);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        opacity: .75;
+      }
+      .glitch:before {
+        transform: translate(2px, -1px);
+        color: #FFD400;
+        filter: blur(.4px);
+        mix-blend-mode: screen;
+      }
+      .glitch:after {
+        transform: translate(-2px, 1px);
+        color: #C77DFF;
+        filter: blur(.6px);
+        mix-blend-mode: screen;
+      }
+
+      /* Hard paper cut edges */
+      .cut {
+        position: relative;
+        isolation: isolate;
+      }
+      .cut:before {
+        content: "";
+        position: absolute;
+        inset: -10px;
+        background: rgba(255,255,255,0.08);
+        clip-path: polygon(
+          2% 6%, 18% 2%, 36% 5%, 52% 2%, 68% 6%, 83% 3%, 98% 7%,
+          97% 25%, 99% 43%, 96% 62%, 98% 78%, 94% 95%,
+          78% 98%, 62% 95%, 48% 98%, 32% 95%, 18% 98%, 4% 94%,
+          2% 78%, 4% 62%, 2% 44%, 3% 26%
+        );
+        z-index: -1;
+      }
+
+      /* Neon CTA */
+      .cta-neon {
+        box-shadow: 0 0 0 2px rgba(255,212,0,.55), 0 0 38px rgba(255,212,0,.35);
+        transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+      }
+      .cta-neon:hover {
+        box-shadow: 0 0 0 2px rgba(255,212,0,.9), 0 0 52px rgba(255,212,0,.55);
+        filter: saturate(1.05);
+      }
+      .cta-neon:active { transform: scale(.98); }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%) translateY(18px);
+        opacity: 0;
+        transition: opacity 260ms ease, transform 260ms ease;
+        z-index: 9999;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* Confetti bits */
+      .confetti {
+        position: fixed;
+        pointer-events: none;
+        inset: 0;
+        overflow: hidden;
+        z-index: 9998;
+      }
+      .confetti i {
+        position: absolute;
+        width: 10px;
+        height: 18px;
+        opacity: .9;
+        transform: translateY(-20px) rotate(0deg);
+        animation: fall 900ms ease-out forwards;
+      }
+      @keyframes fall {
+        to { transform: translateY(160px) rotate(260deg); opacity: 0; }
+      }
+
+      /* Magnetic (desktop) */
+      @media (hover: hover) and (pointer: fine) {
+        .magnetic { display: inline-flex; position: relative; }
+      }
+
+      /* Tilt cards (desktop only) */
+      @media (hover: hover) and (pointer: fine) {
+        .tilt { transform-style: preserve-3d; }
+        .tilt .tilt-inner { transform: translateZ(20px); }
+      }
+    </style>
+  </head>
+
+  <body class="font-body text-white bg-campaignRed">
+    <!-- Scroll progress bar -->
+    <div class="fixed top-0 left-0 right-0 z-[60] h-1 bg-white/10">
+      <div id="scrollbar" class="h-1 bg-campaignYellow w-0"></div>
+    </div>
+
+    <!-- Confetti layer -->
+    <div id="confetti" class="confetti"></div>
+
+    <!-- Top bar -->
+    <header class="sticky top-0 z-50 bg-campaignRed/95 backdrop-blur border-b border-white/10">
+      <div class="mx-auto max-w-6xl px-4">
+        <div class="flex items-center justify-between py-4">
+          <a href="#inicio" class="flex items-center gap-3 group">
+            <div
+              class="h-9 w-9 bg-campaignYellow text-campaignRed grid place-items-center font-display font-black transition-transform duration-200 group-hover:scale-[1.06] group-active:scale-[0.98]"
+            >
+              MP
+            </div>
+            <div class="leading-tight">
+              <div class="font-display font-black tracking-wide">MARÍA PAZ</div>
+              <div class="text-xs text-white/80 -mt-1">L100</div>
+            </div>
+          </a>
+
+          <nav class="hidden md:flex items-center gap-6 text-sm">
+            <a class="hover:text-campaignYellow transition" href="#camino">El Camino</a>
+            <a class="hover:text-campaignYellow transition" href="#unete">Únete</a>
+            <a class="hover:text-campaignYellow transition" href="#como-votar">Cómo votar</a>
+            <a class="hover:text-campaignYellow transition" href="#agenda">Agenda</a>
+            <a class="hover:text-campaignYellow transition" href="#kit">Prensa / Kit</a>
+          </nav>
+
+          <a
+            href="#unete"
+            class="inline-flex items-center gap-2 bg-campaignYellow text-campaignRed font-display font-black uppercase px-4 py-2 transition-transform duration-150 hover:scale-[1.04] active:scale-[0.98]"
+          >
+            Únete
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M10.293 15.707a1 1 0 010-1.414L13.586 11H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="inicio">
+      <!-- HERO: sticky poster -->
+      <section class="relative overflow-hidden grain scanlines sticky-hero">
+        <!-- Big poster shapes (parallax) -->
+        <div class="parallax absolute -top-28 -left-24 h-80 w-80 bg-campaignYellow rotate-6" data-speed="0.22" aria-hidden="true"></div>
+        <div class="parallax absolute top-10 -right-32 h-[26rem] w-[26rem] bg-campaignLilac rotate-12" data-speed="0.16" aria-hidden="true"></div>
+        <div class="parallax absolute bottom-[-160px] left-1/2 -translate-x-1/2 h-[34rem] w-[34rem] rounded-full bg-white/10 blur-2xl" data-speed="0.10" aria-hidden="true"></div>
+
+        <!-- Marquee sticker band -->
+        <div class="absolute bottom-0 left-0 right-0 bg-black/25 border-t border-white/10 overflow-hidden">
+          <div class="marquee flex whitespace-nowrap gap-10 py-2 text-xs uppercase font-display font-black tracking-widest animate-marquee">
+            <span>L 100 • CULTURA • TERRITORIO • DEMOCRACIA •</span>
+            <span aria-hidden="true">L 100 • CULTURA • TERRITORIO • DEMOCRACIA •</span>
+            <span aria-hidden="true">L 100 • CULTURA • TERRITORIO • DEMOCRACIA •</span>
+          </div>
+        </div>
+
+        <div class="mx-auto max-w-6xl px-4 py-14 md:py-20 relative">
+          <div class="grid md:grid-cols-12 gap-10 items-center">
+            <div class="md:col-span-7">
+              <p class="text-white/85 tracking-wide reveal">Campaña al Senado</p>
+
+              <h1 class="mt-3 font-display font-black uppercase leading-[0.9] text-5xl md:text-7xl reveal">
+                <span class="glitch" data-text="Únete a">Únete a</span><br />
+                <span class="text-campaignYellow">L100</span><br />
+                con <span class="inline-block glitch" data-text="María Paz">María Paz</span>
+              </h1>
+
+              <p class="mt-5 max-w-xl text-white/90 text-lg reveal">
+                El camino es la cultura: la cultura que transforma territorios, une a la gente y construye futuro.
+              </p>
+
+              <div class="mt-7 flex flex-col sm:flex-row gap-3 reveal">
+                <a
+                  href="#unete"
+                  class="magnetic cta-neon inline-flex justify-center items-center gap-2 bg-campaignYellow text-campaignRed font-display font-black uppercase px-7 py-4 hover:scale-[1.05]"
+                  data-magnetic="true"
+                  data-confetti="true"
+                >
+                  Únete a Caminantes
+                  <span aria-hidden="true">→</span>
+                </a>
+
+                <a
+                  href="#como-votar"
+                  class="inline-flex justify-center items-center gap-2 border-2 border-white/40 text-white font-display font-black uppercase px-7 py-4 hover:bg-white/10 transition-transform duration-150 hover:scale-[1.02] active:scale-[0.99]"
+                >
+                  Cómo votar L 100
+                </a>
+              </div>
+
+              <div class="mt-9 grid sm:grid-cols-3 gap-4">
+                <div class="reveal tilt bg-white/10 border-2 border-white/15 p-4 shadow-hard">
+                  <div class="tilt-inner">
+                    <div class="font-display font-black uppercase text-campaignYellow">Únete</div>
+                    <p class="text-sm text-white/90 mt-1">Regístrate y recibe el kit digital.</p>
+                  </div>
+                </div>
+                <div class="reveal tilt bg-white/10 border-2 border-white/15 p-4 shadow-hard">
+                  <div class="tilt-inner">
+                    <div class="font-display font-black uppercase text-campaignYellow">Comparte</div>
+                    <p class="text-sm text-white/90 mt-1">Difunde piezas y convoca a tu gente.</p>
+                  </div>
+                </div>
+                <div class="reveal tilt bg-white/10 border-2 border-white/15 p-4 shadow-hard">
+                  <div class="tilt-inner">
+                    <div class="font-display font-black uppercase text-campaignYellow">Activa</div>
+                    <p class="text-sm text-white/90 mt-1">Apoya eventos y territorio.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="md:col-span-5">
+              <div class="relative cut">
+                <div class="parallax absolute -inset-2 bg-campaignLilac rotate-3" data-speed="0.12"></div>
+
+                <div class="relative bg-white text-ink p-3 shadow-card reveal transition-transform duration-200 hover:-translate-y-1">
+                  <div class="aspect-[4/5] bg-neutral-200 overflow-hidden">
+                    <img
+                      src="./assets/maria-paz.jpg"
+                      alt="María Paz Gaviria"
+                      class="parallax h-full w-full object-cover scale-[1.03]"
+                      data-speed="0.08"
+                      onerror="this.style.display='none'; this.parentElement.classList.add('grid','place-items-center'); this.parentElement.innerHTML='<div class=&quot;text-sm text-neutral-700 p-6 text-center&quot;><b>Coloca tu imagen</b><br/>assets/maria-paz.jpg</div>';"
+                    />
+                  </div>
+
+                
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EL CAMINO -->
+      <section id="camino" class="bg-campaignYellow text-campaignRed">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+          <div class="flex items-end justify-between gap-6 flex-wrap">
+            <div>
+              <h2 class="font-display font-black uppercase text-4xl md:text-5xl leading-tight reveal">
+                El camino es la cultura
+              </h2>
+              <p class="mt-2 text-campaignRed/90 max-w-2xl reveal">
+                Esto es una prueba Un eje para el territorio, la convivencia y la democracia. Súmate a caminarlo.
+              </p>
+            </div>
+            <a
+              href="#unete"
+              class="reveal inline-flex items-center gap-2 bg-campaignRed text-white font-display font-black uppercase px-6 py-3 transition-transform duration-150 hover:scale-[1.04] active:scale-[0.98]"
+            >
+              Quiero ser caminante →
+            </a>
+          </div>
+
+          <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards aggressive style -->
+            <div class="reveal tilt bg-white text-ink p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Para la educación</div>
+                <p class="mt-2 text-sm text-neutral-700">Porque la cultura también es aprender, crear y abrir oportunidades.</p>
+              </div>
+            </div>
+            <div class="reveal tilt bg-white text-ink p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Para los territorios</div>
+                <p class="mt-2 text-sm text-neutral-700">Porque lo local es el corazón: barrios, veredas, municipios y ciudades.</p>
+              </div>
+            </div>
+            <div class="reveal tilt bg-white text-ink p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Para la participación</div>
+                <p class="mt-2 text-sm text-neutral-700">Porque la democracia se camina con la gente, con respeto y diálogo.</p>
+              </div>
+            </div>
+            <div class="reveal tilt bg-white text-ink p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Para el futuro</div>
+                <p class="mt-2 text-sm text-neutral-700">Porque la cultura construye convivencia y sentido de país.</p>
+              </div>
+            </div>
+            <div class="reveal tilt bg-white text-ink p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Para la cultura</div>
+                <p class="mt-2 text-sm text-neutral-700">Porque la cultura es identidad, trabajo, creación y bienestar.</p>
+              </div>
+            </div>
+            <div class="reveal tilt bg-white text-ink p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Para la democracia</div>
+                <p class="mt-2 text-sm text-neutral-700">Porque sin cultura cívica no hay acuerdos ni caminos comunes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMO VOTAR -->
+      <section id="como-votar" class="bg-campaignRed">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+          <div class="grid lg:grid-cols-12 gap-10 items-start">
+            <div class="lg:col-span-6">
+              <h2 class="font-display font-black uppercase text-4xl md:text-5xl leading-tight reveal">
+                Así puedes votar
+              </h2>
+              <p class="mt-3 text-white/90 max-w-xl reveal">
+                Una guía simple para que el día de elecciones votes claro y sin dudas.
+              </p>
+
+              <ol class="mt-8 space-y-4">
+                <li class="reveal flex gap-4">
+                  <div class="h-10 w-10 bg-campaignYellow text-campaignRed grid place-items-center font-display font-black shadow-hard">
+                    1
+                  </div>
+                  <div>
+                    <div class="font-display font-black uppercase">Tarjetón del Senado</div>
+                    <p class="text-sm text-white/90 mt-1">Pide el tarjetón del Senado en tu mesa de votación.</p>
+                  </div>
+                </li>
+                <li class="reveal flex gap-4">
+                  <div class="h-10 w-10 bg-campaignYellow text-campaignRed grid place-items-center font-display font-black shadow-hard">
+                    2
+                  </div>
+                  <div>
+                    <div class="font-display font-black uppercase">Busca la letra L</div>
+                    <p class="text-sm text-white/90 mt-1">Ubica la sección correspondiente a la letra <b>L</b>.</p>
+                  </div>
+                </li>
+                <li class="reveal flex gap-4">
+                  <div class="h-10 w-10 bg-campaignYellow text-campaignRed grid place-items-center font-display font-black shadow-hard">
+                    3
+                  </div>
+                  <div>
+                    <div class="font-display font-black uppercase">Marca el 100</div>
+                    <p class="text-sm text-white/90 mt-1">Marca con claridad: <b>L 100</b> – María Paz Gaviria.</p>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="mt-9 flex flex-col sm:flex-row gap-3 reveal">
+                <a
+                  href="#unete"
+                  class="cta-neon inline-flex justify-center items-center gap-2 bg-campaignYellow text-campaignRed font-display font-black uppercase px-7 py-4 hover:scale-[1.05] transition-transform"
+                  data-confetti="true"
+                >
+                  Únete a Caminantes →
+                </a>
+                <a
+                  href="#kit"
+                  class="inline-flex justify-center items-center gap-2 border-2 border-white/40 text-white font-display font-black uppercase px-7 py-4 hover:bg-white/10 transition-transform duration-150 hover:scale-[1.02] active:scale-[0.99]"
+                >
+                  Descargar kit
+                </a>
+              </div>
+            </div>
+
+            <div class="lg:col-span-6">
+              <div class="reveal bg-white/10 border-2 border-white/15 p-6 shadow-hard">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="font-display font-black uppercase text-campaignYellow">Video pedagógico</div>
+                  <span class="text-xs text-white/70">Opcional</span>
+                </div>
+
+                <div class="mt-4 aspect-video bg-black/30 grid place-items-center text-white/80 text-sm border-2 border-white/10">
+                  Inserta aquí tu video (MP4) o embed.
+                </div>
+
+                <p class="mt-4 text-sm text-white/90">
+                  Consejo: mantén el mensaje simple y repetible. En campaña gana el que se entiende a la primera.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AGENDA -->
+      <section id="agenda" class="bg-campaignYellow text-ink">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+          <div class="flex items-end justify-between gap-6 flex-wrap">
+            <div>
+              <h2 class="font-display font-black uppercase text-4xl md:text-5xl leading-tight text-campaignRed reveal">
+                Agenda / Territorios
+              </h2>
+              <p class="mt-2 text-neutral-800 max-w-2xl reveal">
+                Próximas activaciones. (En MVP puedes cargar esto manual; luego lo vuelves dinámico.)
+              </p>
+            </div>
+            <a
+              href="#unete"
+              class="reveal inline-flex items-center gap-2 bg-campaignRed text-white font-display font-black uppercase px-6 py-3 transition-transform duration-150 hover:scale-[1.04] active:scale-[0.98]"
+            >
+              Inscríbete →
+            </a>
+          </div>
+
+          <div class="mt-10 grid md:grid-cols-3 gap-6">
+            <article class="reveal tilt bg-white p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="text-xs text-neutral-500">Bogotá • Fecha</div>
+                <h3 class="mt-2 font-display font-black uppercase text-campaignRed">Encuentro cultural</h3>
+                <p class="mt-2 text-sm text-neutral-700">
+                  Conversación con comunidades y caminantes sobre cultura y territorio.
+                </p>
+                <div class="mt-4 flex gap-2">
+                  <a class="px-4 py-2 bg-campaignRed text-white font-display font-black uppercase text-xs transition-transform active:scale-[0.98]" href="#unete">
+                    Asistir
+                  </a>
+                  <a class="px-4 py-2 border-2 border-neutral-200 text-ink font-display font-black uppercase text-xs hover:bg-neutral-50 transition" href="#" onclick="return false;">
+                    Ver mapa
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <article class="reveal tilt bg-white p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="text-xs text-neutral-500">Medellín • Fecha</div>
+                <h3 class="mt-2 font-display font-black uppercase text-campaignRed">Caminata con la gente</h3>
+                <p class="mt-2 text-sm text-neutral-700">
+                  Activación territorial para sumar caminantes y fortalecer red.
+                </p>
+                <div class="mt-4 flex gap-2">
+                  <a class="px-4 py-2 bg-campaignRed text-white font-display font-black uppercase text-xs transition-transform active:scale-[0.98]" href="#unete">
+                    Asistir
+                  </a>
+                  <a class="px-4 py-2 border-2 border-neutral-200 text-ink font-display font-black uppercase text-xs hover:bg-neutral-50 transition" href="#" onclick="return false;">
+                    Ver mapa
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <article class="reveal tilt bg-white p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="text-xs text-neutral-500">Barranquilla • Fecha</div>
+                <h3 class="mt-2 font-display font-black uppercase text-campaignRed">Diálogo ciudadano</h3>
+                <p class="mt-2 text-sm text-neutral-700">
+                  Escucha activa y conversación para construir propuestas con cultura.
+                </p>
+                <div class="mt-4 flex gap-2">
+                  <a class="px-4 py-2 bg-campaignRed text-white font-display font-black uppercase text-xs transition-transform active:scale-[0.98]" href="#unete">
+                    Asistir
+                  </a>
+                  <a class="px-4 py-2 border-2 border-neutral-200 text-ink font-display font-black uppercase text-xs hover:bg-neutral-50 transition" href="#" onclick="return false;">
+                    Ver mapa
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- UNETE -->
+      <section id="unete" class="bg-campaignRed">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+          <div class="grid lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-5">
+              <h2 class="font-display font-black uppercase text-4xl md:text-5xl leading-tight reveal">
+                Únete a Caminantes
+              </h2>
+              <p class="mt-3 text-white/90 reveal">
+                Regístrate para recibir el kit digital, enterarte de activaciones y sumarte a la red.
+              </p>
+
+              <div class="mt-8 space-y-4">
+                <div class="reveal bg-white/10 border-2 border-white/15 p-4 shadow-hard">
+                  <div class="font-display font-black uppercase text-campaignYellow">Qué hace un caminante</div>
+                  <ul class="mt-2 text-sm text-white/90 list-disc list-inside space-y-1">
+                    <li>Comparte información y piezas.</li>
+                    <li>Apoya eventos y territorio.</li>
+                    <li>Invita a otras personas.</li>
+                    <li>Cuida el mensaje: respeto y cultura cívica.</li>
+                  </ul>
+                </div>
+
+                <a
+                  href="#kit"
+                  class="reveal inline-flex items-center gap-2 border-2 border-white/40 text-white font-display font-black uppercase px-6 py-3 hover:bg-white/10 transition-transform duration-150 hover:scale-[1.02] active:scale-[0.99]"
+                >
+                  Ver prensa / kit →
+                </a>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7">
+              <div class="reveal bg-white text-ink p-6 md:p-8 shadow-hard border-2 border-black/10">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                  <div class="font-display font-black uppercase text-campaignRed text-xl">Formulario de inscripción</div>
+                  <div class="text-xs text-neutral-500">* MVP estático (conectar a backend/Forms)</div>
+                </div>
+
+                <form class="mt-6 grid md:grid-cols-2 gap-4" onsubmit="handleSubmit(event)">
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-neutral-700">Nombre completo</label>
+                    <input
+                      name="name"
+                      required
+                      class="mt-1 w-full border-2 border-neutral-200 px-4 py-3 outline-none focus:border-campaignRed transition"
+                      placeholder="Tu nombre"
+                      type="text"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-neutral-700">Celular (WhatsApp)</label>
+                    <input
+                      name="phone"
+                      required
+                      class="mt-1 w-full border-2 border-neutral-200 px-4 py-3 outline-none focus:border-campaignRed transition"
+                      placeholder="+57 3xx xxx xxxx"
+                      type="tel"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-neutral-700">Correo</label>
+                    <input
+                      name="email"
+                      required
+                      class="mt-1 w-full border-2 border-neutral-200 px-4 py-3 outline-none focus:border-campaignRed transition"
+                      placeholder="tucorreo@ejemplo.com"
+                      type="email"
+                    />
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-neutral-700">Ciudad / Departamento</label>
+                    <input
+                      name="location"
+                      required
+                      class="mt-1 w-full border-2 border-neutral-200 px-4 py-3 outline-none focus:border-campaignRed transition"
+                      placeholder="Ej: Bogotá, Cundinamarca"
+                      type="text"
+                    />
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <fieldset class="border-2 border-neutral-200 p-4">
+                      <legend class="px-2 text-sm font-medium text-neutral-700">¿Cómo quieres ayudar?</legend>
+                      <div class="mt-2 grid sm:grid-cols-2 gap-2 text-sm text-neutral-700">
+                        <label class="flex items-center gap-2">
+                          <input type="checkbox" name="help" value="redes" class="accent-campaignRed" />
+                          Redes sociales
+                        </label>
+                        <label class="flex items-center gap-2">
+                          <input type="checkbox" name="help" value="eventos" class="accent-campaignRed" />
+                          Eventos
+                        </label>
+                        <label class="flex items-center gap-2">
+                          <input type="checkbox" name="help" value="logistica" class="accent-campaignRed" />
+                          Logística
+                        </label>
+                        <label class="flex items-center gap-2">
+                          <input type="checkbox" name="help" value="difusion" class="accent-campaignRed" />
+                          Difusión
+                        </label>
+                      </div>
+                    </fieldset>
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="flex items-start gap-3 text-sm text-neutral-700">
+                      <input required type="checkbox" class="mt-1 accent-campaignRed" />
+                      <span>
+                        Acepto la <a href="#politica" class="underline text-campaignRed">política de tratamiento de datos</a>.
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="md:col-span-2 flex flex-col sm:flex-row gap-3 mt-2">
+                    <button
+                      type="submit"
+                      class="cta-neon inline-flex justify-center items-center gap-2 bg-campaignRed text-white font-display font-black uppercase px-7 py-4 w-full sm:w-auto transition-transform duration-150 hover:scale-[1.04]"
+                      data-confetti="true"
+                    >
+                      Unirme ahora →
+                    </button>
+
+                    <a
+                      class="inline-flex justify-center items-center gap-2 border-2 border-neutral-200 text-ink font-display font-black uppercase px-7 py-4 w-full sm:w-auto transition hover:bg-neutral-50"
+                      href="#"
+                      onclick="copyShareText(); return false;"
+                    >
+                      Copiar texto para WhatsApp
+                    </a>
+                  </div>
+
+                  <p id="formStatus" class="md:col-span-2 text-sm text-neutral-600 mt-2 hidden"></p>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- KIT -->
+      <section id="kit" class="bg-campaignYellow text-ink">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+          <div>
+            <h2 class="font-display font-black uppercase text-4xl md:text-5xl leading-tight text-campaignRed reveal">
+              Prensa / Kit
+            </h2>
+            <p class="mt-2 text-neutral-800 max-w-2xl reveal">
+              Descargas para compartir en redes y apoyar la campaña.
+            </p>
+          </div>
+
+          <div class="mt-10 grid md:grid-cols-3 gap-6">
+            <div class="reveal tilt bg-white p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Kit digital</div>
+                <p class="mt-2 text-sm text-neutral-700">Piezas, stickers, material de difusión.</p>
+                <a class="mt-4 inline-flex items-center gap-2 bg-campaignRed text-white font-display font-black uppercase px-5 py-3 text-xs transition-transform hover:scale-[1.03] active:scale-[0.99]" href="./assets/kit.zip">
+                  Descargar →
+                </a>
+              </div>
+            </div>
+
+            <div class="reveal tilt bg-white p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Logo / marca</div>
+                <p class="mt-2 text-sm text-neutral-700">Versiones para impresión y digital.</p>
+                <a class="mt-4 inline-flex items-center gap-2 bg-campaignRed text-white font-display font-black uppercase px-5 py-3 text-xs transition-transform hover:scale-[1.03] active:scale-[0.99]" href="./assets/logo-pack.zip">
+                  Descargar →
+                </a>
+              </div>
+            </div>
+
+            <div class="reveal tilt bg-white p-6 shadow-hard border-2 border-black/10">
+              <div class="tilt-inner">
+                <div class="font-display font-black uppercase text-campaignRed">Pedagogía electoral</div>
+                <p class="mt-2 text-sm text-neutral-700">Piezas y video para explicar “L 100”.</p>
+                <a class="mt-4 inline-flex items-center gap-2 bg-campaignRed text-white font-display font-black uppercase px-5 py-3 text-xs transition-transform hover:scale-[1.03] active:scale-[0.99]" href="./assets/pedagogia.zip">
+                  Descargar →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- POLITICA -->
+      <section id="politica" class="bg-campaignRed">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+          <h2 class="font-display font-black uppercase text-3xl md:text-4xl reveal">Política de tratamiento de datos</h2>
+          <p class="mt-3 text-white/90 max-w-3xl reveal">
+            Este es un placeholder. En producción pega aquí la política oficial (Habeas Data) aprobada por el equipo jurídico.
+          </p>
+          <p class="mt-3 text-white/70 text-sm reveal">
+            Recomendación: habilita doble confirmación (email) si van a hacer envíos masivos.
+          </p>
+        </div>
+      </section>
+
+      <footer class="bg-ink">
+        <div class="mx-auto max-w-6xl px-4 py-10">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="reveal">
+              <div class="font-display font-black uppercase">María Paz Gaviria</div>
+              <div class="text-xs text-white/70 mt-1">Caminantes • Campaña Senado</div>
+            </div>
+
+            <div class="reveal flex flex-wrap gap-3 text-sm">
+              <a class="text-white/80 hover:text-white" href="#inicio">Inicio</a>
+              <a class="text-white/80 hover:text-white" href="#camino">El Camino</a>
+              <a class="text-white/80 hover:text-white" href="#unete">Únete</a>
+              <a class="text-white/80 hover:text-white" href="#como-votar">Cómo votar</a>
+              <a class="text-white/80 hover:text-white" href="#politica">Datos</a>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-6 border-t border-white/10 text-xs text-white/60 reveal">
+            © <span id="year"></span> • Sitio MVP. Optimizar para producción: Tailwind build + compresión de imágenes + backend de formularios.
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+      <div class="bg-ink text-white px-4 py-3 text-sm border border-white/10 shadow-card">
+        ✅ Listo
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      /* Toast */
+      const toastEl = document.getElementById("toast");
+      let toastTimer = null;
+      function showToast(msg) {
+        if (msg) toastEl.querySelector("div").textContent = msg;
+        toastEl.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1700);
+      }
+
+      function copyShareText() {
+        const text =
+          "Estoy caminando con María Paz Gaviria. Súmate tú también 👉 " +
+          window.location.href.split("#")[0] +
+          "#unete";
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("✅ Texto copiado para WhatsApp");
+        });
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const status = document.getElementById("formStatus");
+
+        status.classList.remove("hidden");
+        status.textContent =
+          "¡Registro listo (modo MVP)! Conecta este formulario a tu backend/Sheets/CRM para guardar los datos.";
+
+        showToast("✅ Registro capturado (MVP)");
+        burstConfetti(0.5, 0.85);
+        form.reset();
+      }
+
+      /* Scroll progress */
+      const bar = document.getElementById("scrollbar");
+      function updateScrollBar() {
+        const doc = document.documentElement;
+        const scrollTop = doc.scrollTop || document.body.scrollTop;
+        const scrollHeight = doc.scrollHeight - doc.clientHeight;
+        const p = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        bar.style.width = p + "%";
+      }
+      window.addEventListener("scroll", updateScrollBar, { passive: true });
+      updateScrollBar();
+
+      /* Reveal */
+      const reveals = document.querySelectorAll(".reveal");
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("is-in")),
+        { threshold: 0.12 }
+      );
+      reveals.forEach((el) => io.observe(el));
+
+      /* Parallax (rAF) */
+      const parallaxEls = Array.from(document.querySelectorAll(".parallax"));
+      let latestScrollY = window.scrollY || 0;
+      let ticking = false;
+
+      function onScroll() {
+        latestScrollY = window.scrollY || 0;
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            parallaxEls.forEach((el) => {
+              const speed = parseFloat(el.getAttribute("data-speed") || "0.1");
+              const y = latestScrollY * speed;
+              el.style.transform = `translate3d(0, ${y}px, 0)`;
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      /* Sticky hero effect (collapses after some scroll) */
+      const hero = document.querySelector(".sticky-hero");
+      function stickyHero() {
+        if (!hero) return;
+        const y = window.scrollY || 0;
+        // 0..520 range
+        const t = Math.min(1, y / 520);
+        // subtle zoom + contrast early, then normal
+        hero.style.filter = `saturate(${1.05 + (1 - t) * 0.25}) contrast(${1.02 + (1 - t) * 0.18})`;
+      }
+      window.addEventListener("scroll", stickyHero, { passive: true });
+      stickyHero();
+
+      /* Magnetic CTA (stronger) */
+      const magneticEls = document.querySelectorAll("[data-magnetic='true']");
+      magneticEls.forEach((btn) => {
+        btn.addEventListener("mousemove", (e) => {
+          if (window.matchMedia("(pointer: fine)").matches === false) return;
+          const r = btn.getBoundingClientRect();
+          const x = e.clientX - r.left - r.width / 2;
+          const y = e.clientY - r.top - r.height / 2;
+          btn.style.transform = `translate(${x * 0.12}px, ${y * 0.18}px) scale(1.06)`;
+        });
+        btn.addEventListener("mouseleave", () => {
+          btn.style.transform = "translate(0,0) scale(1)";
+        });
+      });
+
+      /* Tilt cards (3D) */
+      const tiltCards = document.querySelectorAll(".tilt");
+      tiltCards.forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+          if (window.matchMedia("(pointer: fine)").matches === false) return;
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          const rx = (-py * 8).toFixed(2);
+          const ry = (px * 10).toFixed(2);
+          card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateY(-2px)`;
+        });
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "rotateX(0deg) rotateY(0deg) translateY(0)";
+        });
+      });
+
+      /* Confetti burst (micro, agresivo pero corto) */
+      const confettiLayer = document.getElementById("confetti");
+      function burstConfetti(nx = 0.5, ny = 0.2) {
+        if (!confettiLayer) return;
+        const colors = ["#FFD400", "#C77DFF", "#FFFFFF", "#111111"];
+        const count = 14;
+        const vw = window.innerWidth;
+        const x0 = vw * nx;
+        const y0 = window.innerHeight * ny;
+
+        for (let i = 0; i < count; i++) {
+          const piece = document.createElement("i");
+          const c = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.background = c;
+          piece.style.left = (x0 + (Math.random() * 120 - 60)) + "px";
+          piece.style.top = (y0 + (Math.random() * 20 - 10)) + "px";
+          piece.style.borderRadius = Math.random() > 0.6 ? "2px" : "0px";
+          piece.style.width = (8 + Math.random() * 8) + "px";
+          piece.style.height = (14 + Math.random() * 10) + "px";
+          piece.style.animationDuration = (700 + Math.random() * 450) + "ms";
+          confettiLayer.appendChild(piece);
+
+          setTimeout(() => piece.remove(), 1100);
+        }
+      }
+
+      // Confetti on hover for marked CTAs
+      document.querySelectorAll("[data-confetti='true']").forEach((el) => {
+        el.addEventListener("mouseenter", () => {
+          const r = el.getBoundingClientRect();
+          burstConfetti((r.left + r.width / 2) / window.innerWidth, (r.top + r.height / 2) / window.innerHeight);
+        });
+      });
+    </script>
+  </body>
+</html>
